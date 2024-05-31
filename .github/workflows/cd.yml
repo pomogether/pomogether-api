@@ -6,6 +6,8 @@ on:
       - main
 env:
   ECS_TASK_DEFINITION: .aws/task-definiction.json
+  CONTAINER_NAME: api
+  ECS_SERVICE: pomogether-api
 
 jobs:
   deploy:
@@ -62,13 +64,13 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }} 
-          container-name: ${{ vars.CONTAINER_NAME }}
+          container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ vars.ECS_SERVICE }}
+          service: ${{ env.ECS_SERVICE }}
           cluster: ${{ vars.ECS_CLUSTER }}
           wait-for-service-stability: true
