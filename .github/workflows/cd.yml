@@ -46,16 +46,14 @@ jobs:
           envkey_DB_HOST: ${{ vars.DB_HOST }}
           envkey_DB_USER: ${{ vars.DB_USER }}
           envkey_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          envkey_DB_NAME: ${{ vars.DB_NAME }}
+          envkey_DB_NAME: ${{ vars.DB_DATABASE }}
           envkey_DB_PORT: ${{ vars.DB_PORT }}
           envkey_APP_KEY: ${{ secrets.APP_KEY }}
 
       - name: Deploy to .env file to S3
         id: deploy-env
-        env:
-          ENV_BUCKET: ${{ vars.AWS_S3_BUCKET }}
         run: |
-          aws s3 cp .env s3://$ENV_BUCKET/.env.api
+          aws s3 cp .env s3://${{ vars.AWS_S3_BUCKET }}/.env.api
 
     #   - name: Fill in the new image ID in the Amazon ECS task definition
     #     id: task-def
