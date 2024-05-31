@@ -3,7 +3,6 @@ import type { HttpContext } from '@adonisjs/core/http'
 import RoomsService from '#services/rooms'
 import { inject } from '@adonisjs/core'
 import { createRoomValidator } from '#validators/room'
-import logger from '@adonisjs/core/services/logger'
 
 @inject()
 export default class RoomsController {
@@ -42,7 +41,7 @@ export default class RoomsController {
   }
 
   async pause({ params, response, request }: HttpContext) {
-    // await this.roomsService.pauseRoom(params.id, request.header('X-User-Id') || '')
+    await this.roomsService.pauseRoom(params.id, request.header('X-User-Id') || '')
 
     return response.noContent()
   }

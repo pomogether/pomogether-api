@@ -60,7 +60,7 @@ export default defineConfig({
   tests: {
     suites: [
       {
-        files: ['app/**/*.unit.test.ts'],
+        files: ['tests/unit/**/*.spec.ts'],
         name: 'unit',
         timeout: 2000,
       },

@@ -10,7 +10,7 @@ test.group('RoomService.createRoom', () => {
   const sut = new RoomsService(fakeRoomsRepository, fakeUserRepository)
 
   test('should create a room with provided name', async () => {
-    await sut.createRoom('Room 1')
-    sinon.assert.calledOnceWithExactly(fakeRoomsRepository.insertOne, { name: 'Room 1' })
+    await sut.createRoom({ name: 'Room 1', shortBreak: 5, longBreak: 15, pomodoro: 25, cycles: 2 })
+    sinon.assert.calledOnceWithExactly(fakeRoomsRepository.insertOne, { name: 'Room 1', shortBreak: 5, longBreak: 15, pomodoro: 25, cycles: 2 })
   })
 })

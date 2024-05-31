@@ -28,11 +28,11 @@ export default class RoomsRepository {
     return await room?.related('users').attach([userId])
   }
 
-  // async leaveRoom(id: string, userId: string) {
-  //   const room = await Room.find(id)
+  async leaveRoom(id: string, userId: string) {
+    const room = await Room.find(id)
 
-  //   return await room?.related('users').detach([userId])
-  // }
+    return await room?.related('users').detach([userId])
+  }
 
   async startRoom(id: string) {
     return (await Room.find(id))?.merge({ isRoomStarted: true }).save()
