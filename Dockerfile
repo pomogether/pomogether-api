@@ -39,7 +39,7 @@ WORKDIR /app
 COPY --from=prod-deps --chown=nodejs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nodejs:nodejs /app/build .
 
-ARG PORT=8080
+ARG PORT=3000
 
 ENV TZ=UTC NODE_ENV=production
 ENV PORT=${PORT} HOST=0.0.0.0
