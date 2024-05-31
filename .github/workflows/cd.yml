@@ -38,7 +38,30 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+      
+      - name: Create .env file
+        id: create-env
+        uses: SpicyPizza/create-envfile@v2.0
+        with:
+          envkey_DB_HOST: ${{ vars.DB_HOST }}
+          envkey_DB_USER: ${{ vars.DB_USER }}
+          envkey_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          envkey_DB_NAME: ${{ vars.DB_NAME }}
+          envkey_DB_PORT: ${{ vars.DB_PORT }}
+          envkey_APP_KEY: ${{ secrets.APP_KEY }}
 
+      - name: Deploy to .env file to S3
+        id: deploy-env
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: ${{ vars.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          SRC: .env
+          DEST: .env.api
 
     #   - name: Fill in the new image ID in the Amazon ECS task definition
     #     id: task-def
