@@ -52,16 +52,10 @@ jobs:
 
       - name: Deploy to .env file to S3
         id: deploy-env
-        uses: jakejarvis/s3-sync-action@master
-        with:
-          args: --acl public-read --follow-symlinks --delete
         env:
-          AWS_S3_BUCKET: ${{ vars.AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ vars.AWS_REGION }}
-          SRC: .env
-          DEST: .env.api
+          ENV_BUCKET: ${{ vars.AWS_S3_BUCKET }}
+        run: |
+          aws s3 cp .env s3://$ENV_BUCKET/.env.api
 
     #   - name: Fill in the new image ID in the Amazon ECS task definition
     #     id: task-def
