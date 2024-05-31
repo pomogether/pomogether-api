@@ -6,7 +6,7 @@ on:
       - main
 env:
   ECS_TASK_DEFINITION: .aws/task-definiction.json
-  CONTAINER_NAME: api
+  CONTAINER_NAME: pomogether-api
   ECS_SERVICE: pomogether-api
 
 jobs:
