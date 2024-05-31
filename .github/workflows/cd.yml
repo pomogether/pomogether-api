@@ -53,7 +53,7 @@ jobs:
       - name: Deploy to .env file to S3
         id: deploy-env
         run: |
-          aws s3 cp .env s3://${{ vars.AWS_S3_BUCKET }}/.env.api
+          aws s3 cp .env s3://${{ vars.AWS_S3_BUCKET }}/pomogether_api.env
 
     #   - name: Fill in the new image ID in the Amazon ECS task definition
     #     id: task-def
