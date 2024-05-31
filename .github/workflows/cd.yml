@@ -8,6 +8,8 @@ env:
   ECS_TASK_DEFINITION: .aws/task-definiction.json
   CONTAINER_NAME: pomogether-api
   ECS_SERVICE: pomogether-api
+  ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY}}
+
 
 jobs:
   deploy:
@@ -36,7 +38,7 @@ jobs:
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}-api
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
