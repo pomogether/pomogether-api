@@ -1,4 +1,4 @@
-name: Deploy to Amazon ECS
+name: CI/CD Pipeline for Pomogether API 🤖
 
 on:
   push:
@@ -9,12 +9,49 @@ env:
   CONTAINER_NAME: pomogether-api
   ECS_SERVICE: pomogether-api
   ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY}}
+  NODE_VERSION: 20.11.1
 
 jobs:
+  tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test: [unit, integration]
+    
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+      
+      - name: Install dependencies
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+      - run: pnpm install
+
+      - name: Run ${{ matrix.test }} tests
+        env:
+          DB_HOST: ${{ vars.DB_HOST }}
+          DB_USER: ${{ vars.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_DATABASE: ${{ vars.DB_DATABASE }}
+          DB_PORT: ${{ vars.DB_PORT }}
+          APP_KEY: ${{ secrets.APP_KEY }}
+          LOG_LEVEL: error
+          NODE_ENV: test
+
+        run: pnpm test:${{ matrix.test }}
+
+
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
     environment: production
+    needs: tests
 
     steps:
       - name: Checkout
