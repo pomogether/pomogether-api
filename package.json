@@ -70,5 +70,6 @@
   "prettier": "@adonisjs/prettier-config",
   "engines": {
     "node": ">=20.11.1"
-  }
+  },
+  "packageManager": "pnpm@9.1.4"
 }
