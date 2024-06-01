@@ -1,4 +1,5 @@
 import Room from '#models/room'
+import { RoomStatus } from '#models/room/enums'
 import { ModelAttributes } from '@adonisjs/lucid/types/model'
 
 type RoomInserOneValues = Partial<ModelAttributes<Room>> & {
@@ -35,11 +36,11 @@ export default class RoomsRepository {
   }
 
   async startRoom(id: string) {
-    return (await Room.find(id))?.merge({ isRoomStarted: true }).save()
+    return (await Room.find(id))?.merge({ status: RoomStatus.RUNNING }).save()
   }
 
   async stopRoom(id: string) {
     const room = await Room.find(id)
-    return room?.merge({ isRoomStarted: false }).save()
+    return room?.merge({ status: RoomStatus.PAUSED }).save()
   }
 }

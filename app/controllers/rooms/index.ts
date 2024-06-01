@@ -46,9 +46,9 @@ export default class RoomsController {
     return response.noContent()
   }
 
-  // async leave({ params, response, request }: HttpContext) {
-  //   await this.roomsService.leaveRoom(params.id, request.header('X-User-Id') || '')
+  async leave({ params, response, request }: HttpContext) {
+    await this.roomsService.leaveRoom(params.id, request.header('X-User-Id') || '')
 
-  //   return response.noContent()
-  // }
+    return response.noContent()
+  }
 }

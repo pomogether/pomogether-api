@@ -21,7 +21,7 @@ router
     router.get(':id', [RoomsController, 'show'])
     router.post('', [RoomsController, 'create'])
     router.put(':id/join', [RoomsController, 'join'])
-    // router.post(':id/leave', [RoomsController, 'leave'])
+    router.put(':id/leave', [RoomsController, 'leave'])
     router.put(':id/start', [RoomsController, 'start'])
     router.put(':id/pause', [RoomsController, 'pause'])
   })

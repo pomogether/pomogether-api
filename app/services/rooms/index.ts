@@ -26,7 +26,7 @@ export default class RoomsService {
   // TODO: adicionar expetion customizada para quando não encontrar a sala
   async getRoom(id: string) {
     const room = await this.roomsRepository.findOne(id)
-    if(!room) throw new RoomNotFoundException()
+    if (!room) throw new RoomNotFoundException()
     return room
   }
 
@@ -53,7 +53,6 @@ export default class RoomsService {
     if (isRoomAlreadyStarted) throw new RoomAlreadyStartedException()
 
     await this.roomsRepository.startRoom(id)
-
   }
 
   async pauseRoom(id: string, userId: string) {
