@@ -10,7 +10,6 @@ env:
   ECS_SERVICE: pomogether-api
   ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY}}
 
-
 jobs:
   deploy:
     name: Deploy
@@ -49,7 +48,7 @@ jobs:
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ${{ env.ECS_TASK_DEFINITION }} 
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
           container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
           environment-variables: |
@@ -59,7 +58,6 @@ jobs:
             DB_DATABASE=${{ vars.DB_DATABASE }}
             DB_PORT=${{ vars.DB_PORT }}
             APP_KEY=${{ secrets.APP_KEY }}
-
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1

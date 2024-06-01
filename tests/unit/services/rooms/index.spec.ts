@@ -49,7 +49,7 @@ test.group('RoomService.getRoom', () => {
     await assert.rejects(async () => sut.getRoom('1'), RoomNotFoundException.message)
   })
 
-  test('should get a room by id', async ({assert}) => {
+  test('should get a room by id', async ({ assert }) => {
     // @ts-expect-error
     fakeRoomsRepository.findOne.resolves('mock')
 
@@ -89,13 +89,12 @@ test.group('RoomService.joinRoom', () => {
 
   test('should join user to room', async () => {
     // @ts-expect-error
-    fakeRoomsRepository.findOne.resolves('mock')
+    fakeRoomsRepository.findOne.resolves({ id: '1' })
     // @ts-expect-error
-    fakeUserRepository.findOne.resolves('mock')
-    fakeUserRepository.findUserByRoom.resolves(null)
+    fakeUserRepository.findOne.resolves({ roomId: null })
 
     await sut.joinRoom('1', '1')
-    sinon.assert.calledOnceWithExactly(fakeRoomsRepository.joinRoom, '1', '1')
+    sinon.assert.calledOnce(fakeUserRepository.joinRoom)
   })
 })
 
@@ -149,7 +148,7 @@ test.group('RoomService.pauseRoom', () => {
 
     await assert.rejects(async () => sut.pauseRoom('1', '1'), RoomNotFoundException.message)
   })
-  
+
   test('should throw an error when user is not in room', async ({ assert }) => {
     // @ts-expect-error
     fakeRoomsRepository.findOne.resolves('mock')
@@ -166,7 +165,7 @@ test.group('RoomService.pauseRoom', () => {
 
     await assert.rejects(async () => sut.pauseRoom('1', '1'), RoomNotStartedYetException.message)
   })
-  
+
   test('should pause room', async () => {
     // @ts-expect-error
     fakeRoomsRepository.findOne.resolves({ isRoomStarted: true })
@@ -204,6 +203,6 @@ test.group('RoomService.leaveRoom', () => {
     fakeUserRepository.findUserByRoom.resolves('mock')
 
     await sut.leaveRoom('1', '1')
-    sinon.assert.calledOnceWithExactly(fakeRoomsRepository.leaveRoom, '1', '1')
+    sinon.assert.calledOnce(fakeUserRepository.leaveRoom)
   })
 })

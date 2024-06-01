@@ -1,8 +1,8 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeSave, column, manyToMany } from '@adonisjs/lucid/orm'
+import { BaseModel, beforeSave, column, hasMany } from '@adonisjs/lucid/orm'
 import { RoomStatus } from '#models/room/enums'
 import User from '#models/user'
-import type { ManyToMany } from '@adonisjs/lucid/types/relations'
+import type { HasMany } from '@adonisjs/lucid/types/relations'
 
 export default class Room extends BaseModel {
   @column({ isPrimary: true })
@@ -38,10 +38,8 @@ export default class Room extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
 
-  @manyToMany(() => User, {
-    pivotTable: 'users_rooms',
-  })
-  declare users: ManyToMany<typeof User>
+  @hasMany(() => User)
+  declare users: HasMany<typeof User>
 
   get isRoomStarted() {
     return this.status === RoomStatus.RUNNING
@@ -75,7 +73,7 @@ export default class Room extends BaseModel {
     const isRoomFinished = room.status === RoomStatus.FINISHED
     const isRoomPaused = room.status === RoomStatus.PAUSED
     const isRoomStopped = isRoomFinished || isRoomPaused
-    
+
     if (room.$dirty.status && isRoomStopped) {
       // TODO: procurar uma situação onde timerId é null, porque acho que o undefined vai parar todos os timers
       clearInterval(room.timerId || undefined)

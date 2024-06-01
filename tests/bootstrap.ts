@@ -22,11 +22,7 @@ TestContext.macro('faker', faker)
  * Configure Japa plugins in the plugins array.
  * Learn more - https://japa.dev/docs/runner-config#plugins-optional
  */
-export const plugins: Config['plugins'] = [
-  assert(),
-  apiClient(),
-  pluginAdonisJS(app),
-]
+export const plugins: Config['plugins'] = [assert(), apiClient(), pluginAdonisJS(app)]
 
 /**
  * Configure lifecycle function to run before and after all the
@@ -37,7 +33,7 @@ export const plugins: Config['plugins'] = [
  */
 export const runnerHooks: Required<Pick<Config, 'setup' | 'teardown'>> = {
   setup: [],
-  teardown: []
+  teardown: [],
 }
 
 /**
@@ -46,6 +42,9 @@ export const runnerHooks: Required<Pick<Config, 'setup' | 'teardown'>> = {
  */
 export const configureSuite: Config['configureSuite'] = (suite) => {
   if (['browser', 'integration', 'e2e'].includes(suite.name)) {
-    return suite.setup(() => testUtils.httpServer().start())
+    suite.setup(() => testUtils.httpServer().start())
+    suite.setup(() => testUtils.db().truncate())
   }
+
+  return suite
 }

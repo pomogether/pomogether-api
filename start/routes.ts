@@ -22,7 +22,9 @@ router
     router.post('', [RoomsController, 'create'])
     router.put(':id/join', [RoomsController, 'join'])
     router.put(':id/leave', [RoomsController, 'leave'])
+    // TODO: criar testes para essa rota
     router.put(':id/start', [RoomsController, 'start'])
+    // TODO: criar testes para essa rota
     router.put(':id/pause', [RoomsController, 'pause'])
   })
   .prefix('rooms')

@@ -4,6 +4,7 @@ import RoomNotStartedYetException from '#exceptions/room_not_started_yet'
 import UserAlreadyInRoomException from '#exceptions/user_already_in_room'
 import UserNotFoundException from '#exceptions/user_not_found'
 import UserNotInRoomException from '#exceptions/user_not_in_room'
+import UserNotProvidedException from '#exceptions/user_not_provided'
 import RoomsRepository from '#repositories/rooms'
 import UsersRepository from '#repositories/users'
 import { inject } from '@adonisjs/core'
@@ -23,30 +24,33 @@ export default class RoomsService {
     return this.roomsRepository.findAll()
   }
 
-  // TODO: adicionar expetion customizada para quando não encontrar a sala
   async getRoom(id: string) {
     const room = await this.roomsRepository.findOne(id)
     if (!room) throw new RoomNotFoundException()
     return room
   }
 
-  async joinRoom(id: string, userId: string) {
-    const roomExists = Boolean(await this.roomsRepository.findOne(id))
-    if (!roomExists) throw new RoomNotFoundException()
-    const userExists = Boolean(await this.usersRepository.findOne(userId))
-    if (!userExists) throw new UserNotFoundException()
+  async joinRoom(id: string, userId: string | undefined) {
+    if (!userId) throw new UserNotProvidedException()
 
-    const userAlreadyInRoom = Boolean(await this.usersRepository.findUserByRoom(userId, id))
+    const room = await this.roomsRepository.findOne(id)
+    if (!room) throw new RoomNotFoundException()
+    const user = await this.usersRepository.findOne(userId)
+    if (!user) throw new UserNotFoundException()
+
+    const userAlreadyInRoom = user.roomId === room.id
     if (userAlreadyInRoom) throw new UserAlreadyInRoomException()
 
-    this.roomsRepository.joinRoom(id, userId)
+    this.usersRepository.joinRoom(room, user)
   }
 
-  async startRoom(id: string, userId: string) {
+  async startRoom(id: string, userId: string | undefined) {
+    if (!userId) throw new UserNotProvidedException()
+
     const room = await this.roomsRepository.findOne(id)
     if (!room) throw new RoomNotFoundException()
 
-    const isUserInRoom = Boolean(await this.usersRepository.findUserByRoom(userId, id))
+    const isUserInRoom = Boolean(await this.usersRepository.findUserByRoom(userId, room))
     if (!isUserInRoom) throw new UserNotFoundException()
 
     const isRoomAlreadyStarted = room.isRoomStarted
@@ -55,11 +59,13 @@ export default class RoomsService {
     await this.roomsRepository.startRoom(id)
   }
 
-  async pauseRoom(id: string, userId: string) {
+  async pauseRoom(id: string, userId: string | undefined) {
+    if (!userId) throw new UserNotProvidedException()
+
     const room = await this.roomsRepository.findOne(id)
     if (!room) throw new RoomNotFoundException()
 
-    const isUserInRoom = Boolean(await this.usersRepository.findUserByRoom(userId, id))
+    const isUserInRoom = Boolean(await this.usersRepository.findUserByRoom(userId, room))
     if (!isUserInRoom) throw new UserNotFoundException()
 
     const isRoomStarted = room.isRoomStarted
@@ -68,13 +74,15 @@ export default class RoomsService {
     await this.roomsRepository.stopRoom(id)
   }
 
-  async leaveRoom(id: string, userId: string) {
-    const roomExists = Boolean(await this.roomsRepository.findOne(id))
-    if (!roomExists) throw new RoomNotFoundException()
+  async leaveRoom(id: string, userId: string | undefined) {
+    if (!userId) throw new UserNotProvidedException()
 
-    const userInRoom = Boolean(await this.usersRepository.findUserByRoom(userId, id))
-    if (!userInRoom) throw new UserNotInRoomException()
+    const room = await this.roomsRepository.findOne(id)
+    if (!room) throw new RoomNotFoundException()
 
-    this.roomsRepository.leaveRoom(id, userId)
+    const user = await this.usersRepository.findUserByRoom(userId, room)
+    if (!user) throw new UserNotInRoomException()
+
+    this.usersRepository.leaveRoom(user)
   }
 }

@@ -26,7 +26,7 @@ export default await Env.create(projectRoot, {
   |----------------------------------------------------------
   */
   DB_HOST: Env.schema.string({ format: 'host' }),
-  DB_PORT: Env.schema.number(), 
+  DB_PORT: Env.schema.number(),
   DB_USER: Env.schema.string(),
   DB_PASSWORD: Env.schema.string.optional(),
   DB_DATABASE: Env.schema.string(),

@@ -29,7 +29,7 @@ export default class RoomsController {
   }
 
   async join({ params, response, request }: HttpContext) {
-    await this.roomsService.joinRoom(params.id, request.header('X-User-Id') || '')
+    await this.roomsService.joinRoom(params.id, request.header('X-User-Id'))
 
     return response.noContent()
   }
