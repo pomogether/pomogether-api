@@ -1,4 +1,6 @@
+import RoomAlreadyStartedException from '#exceptions/room_already_started'
 import RoomNotFoundException from '#exceptions/room_not_found'
+import RoomNotStartedYetException from '#exceptions/room_not_started_yet'
 import UserAlreadyInRoomException from '#exceptions/user_already_in_room'
 import UserNotFoundException from '#exceptions/user_not_found'
 import UserNotInRoomException from '#exceptions/user_not_in_room'
@@ -23,7 +25,9 @@ export default class RoomsService {
 
   // TODO: adicionar expetion customizada para quando não encontrar a sala
   async getRoom(id: string) {
-    return this.roomsRepository.findOne(id)
+    const room = await this.roomsRepository.findOne(id)
+    if(!room) throw new RoomNotFoundException()
+    return room
   }
 
   async joinRoom(id: string, userId: string) {
@@ -43,12 +47,10 @@ export default class RoomsService {
     if (!room) throw new RoomNotFoundException()
 
     const isUserInRoom = Boolean(await this.usersRepository.findUserByRoom(userId, id))
-    // Criar execption para quando o usuário não estiver na sala, usando essa apenas para validao por enquanto
     if (!isUserInRoom) throw new UserNotFoundException()
 
     const isRoomAlreadyStarted = room.isRoomStarted
-    // Criar execption para quando o usuário não estiver na sala, usando essa apenas para validao por enquanto
-    if (isRoomAlreadyStarted) throw new Error('Room already started')
+    if (isRoomAlreadyStarted) throw new RoomAlreadyStartedException()
 
     await this.roomsRepository.startRoom(id)
 
@@ -59,12 +61,10 @@ export default class RoomsService {
     if (!room) throw new RoomNotFoundException()
 
     const isUserInRoom = Boolean(await this.usersRepository.findUserByRoom(userId, id))
-    // Criar execption para quando o usuário não estiver na sala, usando essa apenas para validao por enquanto
     if (!isUserInRoom) throw new UserNotFoundException()
 
     const isRoomStarted = room.isRoomStarted
-    // Criar execption para quando o usuário não estiver na sala, usando essa apenas para validao por enquanto
-    if (!isRoomStarted) throw new Error('Room not started yet')
+    if (!isRoomStarted) throw new RoomNotStartedYetException()
 
     await this.roomsRepository.stopRoom(id)
   }
