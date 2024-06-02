@@ -43,7 +43,7 @@ export const runnerHooks: Required<Pick<Config, 'setup' | 'teardown'>> = {
 export const configureSuite: Config['configureSuite'] = (suite) => {
   if (['browser', 'integration', 'e2e'].includes(suite.name)) {
     suite.setup(() => testUtils.httpServer().start())
-    suite.setup(() => testUtils.db().truncate())
+    suite.setup(() => testUtils.db().migrate())
   }
 
   return suite

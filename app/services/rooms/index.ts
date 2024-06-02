@@ -44,14 +44,30 @@ export default class RoomsService {
     this.usersRepository.joinRoom(room, user)
   }
 
+  async leaveRoom(id: string, userId: string | undefined) {
+    if (!userId) throw new UserNotProvidedException()
+
+    const room = await this.roomsRepository.findOne(id)
+    if (!room) throw new RoomNotFoundException()
+
+    const user = await this.usersRepository.findOne(userId)
+    const isUserInRoom = user?.roomId === room.id
+    if (!user) throw new UserNotFoundException()
+    if (!isUserInRoom) throw new UserNotInRoomException()
+
+    this.usersRepository.leaveRoom(user)
+  }
+
   async startRoom(id: string, userId: string | undefined) {
     if (!userId) throw new UserNotProvidedException()
 
     const room = await this.roomsRepository.findOne(id)
     if (!room) throw new RoomNotFoundException()
 
-    const isUserInRoom = Boolean(await this.usersRepository.findUserByRoom(userId, room))
-    if (!isUserInRoom) throw new UserNotFoundException()
+    const user = await this.usersRepository.findOne(userId)
+    const isUserInRoom = user?.roomId === room.id
+    if (!user) throw new UserNotFoundException()
+    if (!isUserInRoom) throw new UserNotInRoomException()
 
     const isRoomAlreadyStarted = room.isRoomStarted
     if (isRoomAlreadyStarted) throw new RoomAlreadyStartedException()
@@ -65,24 +81,14 @@ export default class RoomsService {
     const room = await this.roomsRepository.findOne(id)
     if (!room) throw new RoomNotFoundException()
 
-    const isUserInRoom = Boolean(await this.usersRepository.findUserByRoom(userId, room))
-    if (!isUserInRoom) throw new UserNotFoundException()
+    const user = await this.usersRepository.findOne(userId)
+    const isUserInRoom = user?.roomId === room.id
+    if (!user) throw new UserNotFoundException()
+    if (!isUserInRoom) throw new UserNotInRoomException()
 
     const isRoomStarted = room.isRoomStarted
     if (!isRoomStarted) throw new RoomNotStartedYetException()
 
     await this.roomsRepository.stopRoom(id)
-  }
-
-  async leaveRoom(id: string, userId: string | undefined) {
-    if (!userId) throw new UserNotProvidedException()
-
-    const room = await this.roomsRepository.findOne(id)
-    if (!room) throw new RoomNotFoundException()
-
-    const user = await this.usersRepository.findUserByRoom(userId, room)
-    if (!user) throw new UserNotInRoomException()
-
-    this.usersRepository.leaveRoom(user)
   }
 }

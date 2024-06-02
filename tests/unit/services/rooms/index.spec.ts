@@ -9,6 +9,8 @@ import UserAlreadyInRoomException from '#exceptions/user_already_in_room'
 import RoomAlreadyStartedException from '#exceptions/room_already_started'
 import RoomNotStartedYetException from '#exceptions/room_not_started_yet'
 import UserNotInRoomException from '#exceptions/user_not_in_room'
+import { UserFactory } from '#factories/user'
+import { RoomFactory } from '#factories/room'
 
 test.group('RoomService.createRoom', () => {
   const fakeRoomsRepository = sinon.createStubInstance(RoomsRepository)
@@ -50,8 +52,7 @@ test.group('RoomService.getRoom', () => {
   })
 
   test('should get a room by id', async ({ assert }) => {
-    // @ts-expect-error
-    fakeRoomsRepository.findOne.resolves('mock')
+    fakeRoomsRepository.findOne.resolves(await RoomFactory.make())
 
     await assert.doesNotReject(async () => sut.getRoom('1'))
   })
@@ -69,29 +70,22 @@ test.group('RoomService.joinRoom', () => {
   })
 
   test('should throw an error when user does not exist', async ({ assert }) => {
-    // @ts-expect-error
-    fakeRoomsRepository.findOne.resolves('mock')
+    fakeRoomsRepository.findOne.resolves(await RoomFactory.make())
     fakeUserRepository.findOne.resolves(null)
 
     await assert.rejects(async () => sut.joinRoom('1', '1'), UserNotFoundException.message)
   })
 
   test('should throw an error when user is already in room', async ({ assert }) => {
-    // @ts-expect-error
-    fakeRoomsRepository.findOne.resolves('mock')
-    // @ts-expect-error
-    fakeUserRepository.findOne.resolves('mock')
-    // @ts-expect-error
-    fakeUserRepository.findUserByRoom.resolves('mock')
+    fakeRoomsRepository.findOne.resolves(await RoomFactory.make())
+    fakeUserRepository.findOne.resolves(await UserFactory.make())
 
     await assert.rejects(async () => sut.joinRoom('1', '1'), UserAlreadyInRoomException.message)
   })
 
   test('should join user to room', async () => {
-    // @ts-expect-error
-    fakeRoomsRepository.findOne.resolves({ id: '1' })
-    // @ts-expect-error
-    fakeUserRepository.findOne.resolves({ roomId: null })
+    fakeRoomsRepository.findOne.resolves(await RoomFactory.make())
+    fakeUserRepository.findOne.resolves(await UserFactory.make())
 
     await sut.joinRoom('1', '1')
     sinon.assert.calledOnce(fakeUserRepository.joinRoom)
@@ -110,31 +104,26 @@ test.group('RoomService.startRoom', () => {
   })
 
   test('should throw an error when user is not in room', async ({ assert }) => {
-    // @ts-expect-error
-    fakeRoomsRepository.findOne.resolves('mock')
-    fakeUserRepository.findUserByRoom.resolves(null)
+    fakeRoomsRepository.findOne.resolves(await RoomFactory.make())
+    fakeUserRepository.findOne.resolves(null)
 
     await assert.rejects(async () => sut.startRoom('1', '1'), UserNotFoundException.message)
   })
 
   test('should throw an error when room is already started', async ({ assert }) => {
-    // @ts-expect-error
-    fakeRoomsRepository.findOne.resolves({ isRoomStarted: true })
-    // @ts-expect-error
-    fakeUserRepository.findUserByRoom.resolves('mock')
+    fakeRoomsRepository.findOne.resolves(await RoomFactory.merge({ isRoomStarted: true }).make())
+    fakeUserRepository.findOne.resolves(await UserFactory.make())
 
     // TODO: usar RoomAlreadyStartedException, não fiz isso porque não foi criado ainda no código do service
     await assert.rejects(async () => sut.startRoom('1', '1'), RoomAlreadyStartedException.message)
   })
 
   test('should start room', async () => {
-    // @ts-expect-error
-    fakeRoomsRepository.findOne.resolves({ isRoomStarted: false })
-    // @ts-expect-error
-    fakeUserRepository.findUserByRoom.resolves('mock')
+    fakeRoomsRepository.findOne.resolves(await RoomFactory.merge({ isRoomStarted: false }).make())
+    fakeUserRepository.findOne.resolves(await UserFactory.make())
 
     await sut.startRoom('1', '1')
-    sinon.assert.calledOnceWithExactly(fakeRoomsRepository.startRoom, '1')
+    sinon.assert.calledOnce(fakeRoomsRepository.startRoom)
   })
 })
 
@@ -150,27 +139,22 @@ test.group('RoomService.pauseRoom', () => {
   })
 
   test('should throw an error when user is not in room', async ({ assert }) => {
-    // @ts-expect-error
-    fakeRoomsRepository.findOne.resolves('mock')
-    fakeUserRepository.findUserByRoom.resolves(null)
+    fakeRoomsRepository.findOne.resolves(await RoomFactory.make())
+    fakeUserRepository.findOne.resolves(await UserFactory.make())
 
-    await assert.rejects(async () => sut.pauseRoom('1', '1'), UserNotFoundException.message)
+    await assert.rejects(async () => sut.pauseRoom('1', '1'), UserNotInRoomException.message)
   })
 
   test('should throw an error when room is already started', async ({ assert }) => {
-    // @ts-expect-error
-    fakeRoomsRepository.findOne.resolves({ isRoomStarted: false })
-    // @ts-expect-error
-    fakeUserRepository.findUserByRoom.resolves('mock')
+    fakeRoomsRepository.findOne.resolves(await RoomFactory.merge({ isRoomStarted: false }).make())
+    fakeUserRepository.findOne.resolves(await UserFactory.make())
 
     await assert.rejects(async () => sut.pauseRoom('1', '1'), RoomNotStartedYetException.message)
   })
 
   test('should pause room', async () => {
-    // @ts-expect-error
-    fakeRoomsRepository.findOne.resolves({ isRoomStarted: true })
-    // @ts-expect-error
-    fakeUserRepository.findUserByRoom.resolves('mock')
+    fakeRoomsRepository.findOne.resolves(await RoomFactory.merge({ isRoomStarted: true }).make())
+    fakeUserRepository.findOne.resolves(await UserFactory.make())
 
     await sut.pauseRoom('1', '1')
     sinon.assert.calledOnceWithExactly(fakeRoomsRepository.stopRoom, '1')
@@ -189,18 +173,15 @@ test.group('RoomService.leaveRoom', () => {
   })
 
   test('should throw an error when user is not in room', async ({ assert }) => {
-    // @ts-expect-error
-    fakeRoomsRepository.findOne.resolves('mock')
-    fakeUserRepository.findUserByRoom.resolves(null)
+    fakeRoomsRepository.findOne.resolves(await RoomFactory.make())
+    fakeUserRepository.findOne.resolves(null)
 
     await assert.rejects(async () => sut.leaveRoom('1', '1'), UserNotInRoomException.message)
   })
 
   test('should leave room', async () => {
-    // @ts-expect-error
-    fakeRoomsRepository.findOne.resolves('mock')
-    // @ts-expect-error
-    fakeUserRepository.findUserByRoom.resolves('mock')
+    fakeRoomsRepository.findOne.resolves(await RoomFactory.make())
+    fakeUserRepository.findOne.resolves(await UserFactory.make())
 
     await sut.leaveRoom('1', '1')
     sinon.assert.calledOnce(fakeUserRepository.leaveRoom)

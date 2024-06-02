@@ -56,13 +56,10 @@ export default class Room extends BaseModel {
     if (room.$dirty.status && room.status === RoomStatus.RUNNING) {
       room.timerId = Number(
         setInterval(async () => {
-          const updatedRoom = await Room.find(room.id)
-          if (!updatedRoom) return
-
-          const currentTime = DateTime.fromFormat(updatedRoom.currentTime, 'mm:ss')
+          const currentTime = DateTime.fromFormat(room.currentTime, 'mm:ss')
           const newTime = currentTime.minus({ seconds: 1 }).toFormat('mm:ss')
 
-          updatedRoom.merge({ currentTime: newTime }).save()
+          room.merge({ currentTime: newTime }).save()
         }, 1000)
       )
     }

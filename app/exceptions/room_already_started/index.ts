@@ -2,7 +2,7 @@ import { Exception } from '@adonisjs/core/exceptions'
 import { HttpContext } from '@adonisjs/core/http'
 
 export default class RoomAlreadyStartedException extends Exception {
-  static status = 400
+  static status = 409
   static code = 'E_ROOM_ALREADY_STARTED'
   static message = 'Room already started'
 

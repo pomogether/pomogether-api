@@ -19,8 +19,7 @@ jobs:
     environment: test
     strategy:
       matrix:
-        test: [unit, integration]
-    
+        test: [coverage]
 
     steps:
       - name: Checkout
@@ -29,7 +28,7 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           version: ${{ env.PNPM_VERSION }}
-      
+
       - name: Install dependencies
         uses: actions/setup-node@v4
         with:
@@ -49,7 +48,6 @@ jobs:
           NODE_ENV: test
 
         run: pnpm test:${{ matrix.test }}
-
 
   deploy:
     name: Deploy

@@ -2,7 +2,7 @@ import { Exception } from '@adonisjs/core/exceptions'
 import { HttpContext } from '@adonisjs/core/http'
 
 export default class UserNotInRoomException extends Exception {
-  static status = 404
+  static status = 409
   static code = 'E_USER_NOT_IN_ROOM'
   static message = 'User not in room'
 

@@ -34,6 +34,12 @@ export default class RoomsController {
     return response.noContent()
   }
 
+  async leave({ params, response, request }: HttpContext) {
+    await this.roomsService.leaveRoom(params.id, request.header('X-User-Id') || '')
+
+    return response.noContent()
+  }
+
   async start({ params, response, request }: HttpContext) {
     await this.roomsService.startRoom(params.id, request.header('X-User-Id') || '')
 
@@ -42,12 +48,6 @@ export default class RoomsController {
 
   async pause({ params, response, request }: HttpContext) {
     await this.roomsService.pauseRoom(params.id, request.header('X-User-Id') || '')
-
-    return response.noContent()
-  }
-
-  async leave({ params, response, request }: HttpContext) {
-    await this.roomsService.leaveRoom(params.id, request.header('X-User-Id') || '')
 
     return response.noContent()
   }
