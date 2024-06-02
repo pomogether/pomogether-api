@@ -16,7 +16,7 @@
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
     "migration:fresh": "node ace migration:fresh",
-    "migration:run": "node ace migration:run"
+    "migrate": "node ace migration:run"
   },
   "imports": {
     "#controllers/*": "./app/controllers/*/index.js",

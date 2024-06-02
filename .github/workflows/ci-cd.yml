@@ -51,6 +51,41 @@ jobs:
 
         run: pnpm test:${{ matrix.test }}
 
+  migrations:
+    name: Migrations
+    runs-on: ubuntu-latest
+    environment: production
+    needs: tests
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+      - run: pnpm install
+
+      - name: Run migrations
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_DATABASE: ${{ vars.DB_DATABASE }}
+          DB_PORT: ${{ vars.DB_PORT }}
+          APP_KEY: ${{ secrets.APP_KEY }}
+          DB_SSL: true
+          LOG_LEVEL: error
+          NODE_ENV: production
+          HOST:
+        run: pnpm migrate
+  
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
