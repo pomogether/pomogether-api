@@ -1,3 +1,10 @@
+import RoomAlreadyStartedException from '#exceptions/room_already_started'
+import RoomNotFoundException from '#exceptions/room_not_found'
+import RoomNotStartedYetException from '#exceptions/room_not_started_yet'
+import UserAlreadyInRoomException from '#exceptions/user_already_in_room'
+import UserNotFoundException from '#exceptions/user_not_found'
+import UserNotInRoomException from '#exceptions/user_not_in_room'
+import UserNotProvidedException from '#exceptions/user_not_provided'
 import { RoomFactory } from '#factories/room'
 import { UserFactory } from '#factories/user'
 import Room from '#models/room'
@@ -32,6 +39,7 @@ test.group('GET /rooms/:id', (group) => {
     const response = await client.get(`/rooms/${faker.string.uuid()}`)
 
     response.assertStatus(404)
+    response.assertBody(RoomNotFoundException.body())
   })
 
   test('should return room by id', async ({ client }) => {
@@ -53,6 +61,7 @@ test.group('POST /rooms', (group) => {
     response.assertStatus(200)
   })
 
+  // TODO: ver dps
   test('should return 422 when validation fails', async ({ client }) => {
     const response = await client.post('/rooms').json({})
 
@@ -70,6 +79,7 @@ test.group('PUT /rooms/:id/join', (group) => {
     const response = await client.put(`/rooms/${room.id}/join`)
 
     response.assertStatus(422)
+    response.assertBody(UserNotProvidedException.body())
   })
 
   test('should return 404 when room does not exist', async ({ client, faker }) => {
@@ -78,6 +88,7 @@ test.group('PUT /rooms/:id/join', (group) => {
       .headers({ 'x-user-id': faker.string.uuid() })
 
     response.assertStatus(404)
+    response.assertBody(RoomNotFoundException.body())
   })
 
   test('should return 404 when user does not exist', async ({ client, faker }) => {
@@ -87,6 +98,7 @@ test.group('PUT /rooms/:id/join', (group) => {
       .headers({ 'x-user-id': faker.string.uuid() })
 
     response.assertStatus(404)
+    response.assertBody(UserNotFoundException.body())
   })
 
   test('should return 409 when user already in room', async ({ client }) => {
@@ -97,6 +109,7 @@ test.group('PUT /rooms/:id/join', (group) => {
     const response = await client.put(`/rooms/${room.id}/join`).headers({ 'x-user-id': user.id })
 
     response.assertStatus(409)
+    response.assertBody(UserAlreadyInRoomException.body())
   })
 
   test('should join room', async ({ client, assert }) => {
@@ -124,6 +137,7 @@ test.group('PUT /rooms/:id/leave', (group) => {
     const response = await client.put(`/rooms/${room.id}/leave`)
 
     response.assertStatus(422)
+    response.assertBody(UserNotProvidedException.body())
   })
 
   test('should return 404 when room does not exist', async ({ client, faker }) => {
@@ -132,6 +146,7 @@ test.group('PUT /rooms/:id/leave', (group) => {
       .headers({ 'x-user-id': faker.string.uuid() })
 
     response.assertStatus(404)
+    response.assertBody(RoomNotFoundException.body())
   })
 
   test('should return 404 when user does not exist', async ({ client, faker }) => {
@@ -141,6 +156,7 @@ test.group('PUT /rooms/:id/leave', (group) => {
       .headers({ 'x-user-id': faker.string.uuid() })
 
     response.assertStatus(404)
+    response.assertBody(UserNotFoundException.body())
   })
 
   test('should return 409 when user is not in room', async ({ client }) => {
@@ -150,6 +166,7 @@ test.group('PUT /rooms/:id/leave', (group) => {
     const response = await client.put(`/rooms/${room.id}/leave`).headers({ 'x-user-id': user.id })
 
     response.assertStatus(409)
+    response.assertBody(UserNotInRoomException.body())
   })
 
   test('should leave room', async ({ client, assert }) => {
@@ -176,6 +193,7 @@ test.group('PUT /rooms/:id/start', (group) => {
     const response = await client.put(`/rooms/${room.id}/start`)
 
     response.assertStatus(422)
+    response.assertBody(UserNotProvidedException.body())
   })
 
   test('should return 404 when room does not exist', async ({ client, faker }) => {
@@ -184,6 +202,7 @@ test.group('PUT /rooms/:id/start', (group) => {
       .headers({ 'x-user-id': faker.string.uuid() })
 
     response.assertStatus(404)
+    response.assertBody(RoomNotFoundException.body())
   })
 
   test('should return 404 when user does not exist', async ({ client, faker }) => {
@@ -194,6 +213,7 @@ test.group('PUT /rooms/:id/start', (group) => {
       .headers({ 'x-user-id': faker.string.uuid() })
 
     response.assertStatus(404)
+    response.assertBody(UserNotFoundException.body())
   })
 
   test('should return 409 when user is not in room', async ({ client }) => {
@@ -203,6 +223,7 @@ test.group('PUT /rooms/:id/start', (group) => {
     const response = await client.put(`/rooms/${room.id}/start`).headers({ 'x-user-id': user.id })
 
     response.assertStatus(409)
+    response.assertBody(UserNotInRoomException.body())
   })
 
   test('should return 409 when room already started', async ({ client }) => {
@@ -212,6 +233,7 @@ test.group('PUT /rooms/:id/start', (group) => {
     const response = await client.put(`/rooms/${room.id}/start`).headers({ 'x-user-id': user.id })
 
     response.assertStatus(409)
+    response.assertBody(RoomAlreadyStartedException.body())
 
     await client.put(`/rooms/${room.id}/pause`).headers({ 'x-user-id': user.id })
   })
@@ -237,6 +259,7 @@ test.group('PUT /rooms/:id/pause', (group) => {
     const response = await client.put(`/rooms/${room.id}/pause`)
 
     response.assertStatus(422)
+    response.assertBody(UserNotProvidedException.body())
   })
 
   test('should return 404 when room does not exist', async ({ client, faker }) => {
@@ -245,6 +268,7 @@ test.group('PUT /rooms/:id/pause', (group) => {
       .headers({ 'x-user-id': faker.string.uuid() })
 
     response.assertStatus(404)
+    response.assertBody(RoomNotFoundException.body())
   })
 
   test('should return 404 when user does not exist', async ({ client, faker }) => {
@@ -254,26 +278,29 @@ test.group('PUT /rooms/:id/pause', (group) => {
       .headers({ 'x-user-id': faker.string.uuid() })
 
     response.assertStatus(404)
+    response.assertBody(UserNotFoundException.body())
   })
 
   test('should return 409 when user is not in room', async ({ client }) => {
     const room = (await RoomFactory.create()).toJSON()
-    const user = (await UserFactory.merge({ roomId: room.id }).create()).toJSON()
+    const user = (await UserFactory.create()).toJSON()
 
     const response = await client.put(`/rooms/${room.id}/pause`).headers({ 'x-user-id': user.id })
 
     response.assertStatus(409)
+    response.assertBody(UserNotInRoomException.body())
   })
 
   test('should return 409 when room is not started', async ({ client }) => {
     const room = (await RoomFactory.create()).toJSON()
-    const user = (await UserFactory.create()).toJSON()
+    const user = (await UserFactory.merge({ roomId: room.id }).create()).toJSON()
 
     await client.put(`/rooms/${room.id}/join`).headers({ 'x-user-id': user.id })
 
     const response = await client.put(`/rooms/${room.id}/pause`).headers({ 'x-user-id': user.id })
 
     response.assertStatus(409)
+    response.assertBody(RoomNotStartedYetException.body())
   })
 
   test('should pause room', async ({ client, assert }) => {
@@ -286,3 +313,6 @@ test.group('PUT /rooms/:id/pause', (group) => {
     assert.isFalse((await Room.find(room.id))?.isRoomStarted)
   })
 })
+
+// O que acontence se um usuário já está em uma sala e tenta entrar em outra?
+// Testar fluxo de tick do timer se realmente tá funcionando

@@ -10,7 +10,7 @@ export default class RoomNotFoundException extends Exception {
     ctx.response.status(error.status).send({ message: error.message, code: error.code })
   }
 
-  body() {
+  static body() {
     return { message: this.message, code: this.code }
   }
 }
