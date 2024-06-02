@@ -19,7 +19,7 @@ jobs:
     environment: test
     strategy:
       matrix:
-        test: [coverage]
+        test: [unit, coverage]
 
     steps:
       - name: Checkout
@@ -44,6 +44,7 @@ jobs:
           DB_DATABASE: ${{ vars.DB_DATABASE }}
           DB_PORT: ${{ vars.DB_PORT }}
           APP_KEY: ${{ secrets.APP_KEY }}
+          DB_SSL: true
           LOG_LEVEL: error
           NODE_ENV: test
           HOST: 0.0.0.0

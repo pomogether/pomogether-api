@@ -5,7 +5,7 @@ import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
-  declare id: number
+  declare id: string
 
   @column()
   declare email: string
