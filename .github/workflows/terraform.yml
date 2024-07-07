@@ -1,0 +1,35 @@
+name: Terraform
+
+on:
+    workflow_call:
+      inputs:
+          workspace:
+              description: 'The Terraform workspace to use'
+              type: string
+              required: true
+          workdir:
+              description: 'The Terraform working directory'
+              type: string
+              required: false
+env:
+  WORKSPACE: ${{ github.event.inputs.workspace || './terraform' }} 
+
+jobs:
+    terraform-apply:
+        runs-on: ubuntu-latest 
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v3
+              with:
+                  terraform_version: 1.9.1
+              
+            - name: Terraform Init
+              run: terraform init
+              working-directory: ${{ github.env.WORKSPACE }}
+
+            - name: Terraform Workspace
+              run: terraform workspace select -or-create ${{ github.event.inputs.workspace }}
+              working-directory: ${{ github.env.WORKSPACE }}
