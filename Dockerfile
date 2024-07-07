@@ -7,8 +7,7 @@ WORKDIR /app
 
 # Setup pnpm and turbo on the alpine base
 FROM alpine as base
-RUN apk update
-RUN apk add --no-cache libc6-compat
+RUN apk update && apk add --no-cache libc6-compat
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"

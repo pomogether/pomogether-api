@@ -1,0 +1,50 @@
+name: Run Tests
+run-name: tests
+
+on:
+    workflow_run: 
+        workflows: ["build"]
+        types:
+            - completed
+
+env:
+  NODE_VERSION: 20.11.1
+  PNPM_VERSION: 9.1.4
+
+jobs:
+    tests:
+        name: Tests
+        runs-on: ubuntu-latest
+        environment: test
+        strategy:
+            matrix:
+                test: [unit, coverage]
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - uses: pnpm/action-setup@v4
+              with:
+                  version: ${{ env.PNPM_VERSION }}
+
+            - name: Install dependencies
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: 'pnpm'
+            - run: pnpm install
+
+            - name: Run ${{ matrix.test }} tests
+              env:
+                  DB_HOST: ${{ secrets.DB_HOST }}
+                  DB_USER: ${{ secrets.DB_USER }}
+                  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+                  DB_DATABASE: ${{ vars.DB_DATABASE }}
+                  DB_PORT: ${{ vars.DB_PORT }}
+                  APP_KEY: ${{ secrets.APP_KEY }}
+                  DB_SSL: true
+                  LOG_LEVEL: error
+                  NODE_ENV: test
+
+              run: pnpm test:${{ matrix.test }}
