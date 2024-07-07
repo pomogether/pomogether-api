@@ -21,4 +21,4 @@ jobs:
           REPOSITORY: pomogether-api
           TAG: v1
         run: |
-          docker build -t $REGISTRY/REPOSITORY:$TAG -t $REGISTRY/REPOSITORY:latest .
+          docker build -t $REGISTRY/$REPOSITORY:$TAG -t $REGISTRY/$REPOSITORY:latest .
