@@ -12,7 +12,7 @@ on:
               type: string
               required: false
 env:
-  WORKSPACE: ${{ github.event.inputs.workspace || './terraform' }} 
+  WORKDIR: ${{ github.event.inputs.workdir || './terraform' }} 
 
 jobs:
     terraform-apply:
@@ -28,8 +28,8 @@ jobs:
               
             - name: Terraform Init
               run: terraform init
-              working-directory: ${{ github.env.WORKSPACE }}
+              working-directory: ${{ github.env.WORKDIR }}
 
             - name: Terraform Workspace
-              run: terraform workspace select -or-create ${{ github.event.inputs.workspace }}
-              working-directory: ${{ github.env.WORKSPACE }}
+              run: terraform workspace select -or-create ${{ github.event.inputs.workspace || 'teste' }}
+              working-directory: ${{ github.env.WORKDIR }}
