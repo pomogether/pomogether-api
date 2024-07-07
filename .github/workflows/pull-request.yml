@@ -15,10 +15,20 @@ jobs:
         uses: ./.github/workflows/build.yml
     
     terraform-apply:
-        needs:  build
-        uses: ./.github/workflows/terraform.yml
-        with:
-            workspace: 'dev'
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+        
+        - name: Setup Terraform
+          uses: ./.github/actions/terraform-setup
+          with:
+              workspace: dev
+              working-directory: './terraform'
+
+        - name: Terraform Apply
+          run: terraform apply -auto-approve
+          working-directory: './terraform'
 
     tests:
         needs:  terraform-apply

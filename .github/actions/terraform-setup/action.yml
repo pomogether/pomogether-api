@@ -1,0 +1,26 @@
+name: Terraform Setup
+description: Configure Terraform workspace
+
+inputs:
+  workspace: 
+    description: The Terraform workspace to use
+    required: true
+  working-directory:
+    description: The Terraform working directory
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+          terraform_version: 1.9.1
+      
+    - name: Terraform Init
+      run: terraform init
+      working-directory: ${{ inputs.working-directory }} 
+
+    - name: Terraform Workspace
+      run: terraform workspace select -or-create ${{ inputs.workspace }}
+      working-directory: ${{ inputs.working-directory }}
