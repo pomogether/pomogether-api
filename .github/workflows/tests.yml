@@ -3,7 +3,7 @@ run-name: tests
 
 on:
     workflow_run: 
-        workflows: ["build"]
+        workflows: ["Build Image Application"]
         types:
             - completed
 
