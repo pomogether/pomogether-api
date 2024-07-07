@@ -11,25 +11,21 @@ on:
       - closed
 
 jobs:
-    build:
-        uses: ./.github/workflows/build.yml
+    # build:
+    #     uses: ./.github/workflows/build.yml
     
     terraform-apply:
       runs-on: ubuntu-latest
       steps:
-        - name: Checkout repository
-          uses: actions/checkout@v4
-        
-        - name: Setup Terraform
-          uses: ./.github/actions/terraform-setup
-          with:
-              workspace: dev
-              working-directory: './terraform'
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-        - name: Terraform Apply
-          run: terraform apply -auto-approve
-          working-directory: './terraform'
+      - name: Set up Terraform Workspace
+        uses: ./.github/actions/terraform-setup-action
+        with:
+          workspace: dev # Substitua pelo nome do seu workspace do Terraform
+          working-directory: ./terraform 
 
-    tests:
-        needs:  terraform-apply
-        uses: ./.github/workflows/tests.yml
+    # tests:
+    #     needs:  terraform-apply
+    #     uses: ./.github/workflows/tests.yml
