@@ -14,13 +14,16 @@ runs:
   steps:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
+      shell: bash
       with:
           terraform_version: 1.9.1
       
     - name: Terraform Init
+      shell: bash
       run: terraform init
       working-directory: ${{ inputs.working-directory }} 
 
     - name: Terraform Workspace
+      shell: bash
       run: terraform workspace select -or-create ${{ inputs.workspace }}
       working-directory: ${{ inputs.working-directory }}
