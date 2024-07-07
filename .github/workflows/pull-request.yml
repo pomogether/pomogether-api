@@ -24,7 +24,7 @@ jobs:
         uses: ./.github/actions/terraform-setup
         with:
           workspace: dev # Substitua pelo nome do seu workspace do Terraform
-          working-directory: ./terraform 
+          working-directory: terraform 
 
     # tests:
     #     needs:  terraform-apply
