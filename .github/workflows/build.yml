@@ -1,5 +1,5 @@
-name: Build Application
-run-name: build
+name: build
+run-name: Build Image Application
 
 on:
   pull_request:
