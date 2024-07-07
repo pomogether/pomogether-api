@@ -2,10 +2,9 @@ name: Run Tests
 run-name: tests
 
 on:
-    workflow_run: 
-        workflows: ["Build Image Application"]
-        types:
-            - completed
+    workflow_call:
+
+
 
 env:
   NODE_VERSION: 20.11.1

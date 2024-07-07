@@ -2,9 +2,7 @@ name: build
 run-name: Build Image Application
 
 on:
-  pull_request:
-    branches:
-      - main
+  workflow_call:
 
 jobs:
   build:
