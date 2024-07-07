@@ -7,8 +7,8 @@ on:
 
 jobs:
     build:
-        uses: ./.github/workflows/build.yml@just-branch
+        uses: ./.github/workflows/build.yml
 
     tests:
         needs:  build
-        uses: ./.github/workflows/tests.yml@just-branch
+        uses: ./.github/workflows/tests.yml
